@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -7,11 +9,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Download, Clapperboard, Music, Image as ImageIcon } from 'lucide-react';
 
-// --- Types based on the new API response ---
 interface DownloadOption {
   label: string;
   url: string;
-  type: string; // 'video' | 'audio' | 'image'
+  type: string;
   quality?: string;
 }
 
@@ -67,7 +68,7 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
     setMeta(null);
 
     try {
-      // Call our internal API route (Secure Proxy)
+      // Call our internal API route
       const res = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,7 +151,7 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
                             fill
                             className="object-cover"
                             sizes="(max-width: 640px) 100vw, 256px"
-                            unoptimized={true} // Important for external CDN images
+                            unoptimized={true}
                         />
                     )}
                 </div>
@@ -166,7 +167,6 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
                   
                   <div className="mt-4 flex flex-wrap gap-2">
                     {meta.options.map((s, i) => {
-                      // Construct the Secure Stream Link
                       const streamLink = `/api/stream?url=${encodeURIComponent(s.url)}&title=${encodeURIComponent(meta.title)}`;
                       
                       return (
