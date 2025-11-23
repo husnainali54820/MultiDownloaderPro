@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   
-  // Accept 'url' or 'target'
   const target = searchParams.get('url') || searchParams.get('target');
   const title = searchParams.get('title');
 
@@ -21,15 +20,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // FIX: We ONLY send 'target'. We removed '&key=' because it caused the 422 error.
-    // The API Key is sent securely in the headers below.
     const encodedTarget = encodeURIComponent(target);
-    const fetchUrl = `${API_BASE}/stream?target=${encodedTarget}`;
+    
+    // FIX: Re-added '&key=${API_KEY}' because the backend requires it
+    const fetchUrl = `${API_BASE}/stream?target=${encodedTarget}&key=${API_KEY}`;
 
     const response = await fetch(fetchUrl, {
       headers: {
-        'x-api-key': API_KEY, // Key is sent here
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'x-api-key': API_KEY,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
       },
       redirect: 'manual', 
     });
@@ -58,7 +57,6 @@ export async function GET(request: NextRequest) {
         });
 
     } else if (!response.ok) {
-         // Log the actual error from the backend for debugging
          const errorText = await response.text();
          console.error(`Backend Error (${response.status}):`, errorText);
          return NextResponse.json({ error: 'Backend stream failed', details: errorText }, { status: response.status });
