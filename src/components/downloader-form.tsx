@@ -30,7 +30,7 @@ function ResultSkeleton() {
       <Card className="glassmorphism overflow-hidden shadow-glow">
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col gap-6 sm:flex-row">
-            <Skeleton className="relative aspect-video w-full shrink-0 sm:w-64 rounded-md" />
+            <Skeleton className="relative h-48 w-full shrink-0 sm:w-72 rounded-md" />
             <div className="flex flex-1 flex-col">
               <Skeleton className="h-6 w-4/5 rounded" />
               <Skeleton className="mt-2 h-4 w-1/3 rounded" />
@@ -74,6 +74,12 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
+
+      // Check if response is JSON (avoid HTML errors)
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("API Connection Failed. Please try again.");
+      }
 
       const result = await res.json();
 
@@ -143,29 +149,36 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
           <Card className="glassmorphism overflow-hidden shadow-glow">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col gap-6 sm:flex-row">
-                <div className="relative aspect-video w-full shrink-0 sm:w-64 bg-black/10 rounded-md overflow-hidden">
+                {/* 
+                   UPDATED IMAGE CONTAINER:
+                   1. Removed 'aspect-video' (16:9) which was bad for vertical videos.
+                   2. Added 'h-64' (Fixed height) and 'bg-black'.
+                   3. Changed to 'object-contain' so the full image fits inside.
+                */}
+                <div className="relative h-64 w-full shrink-0 sm:w-72 bg-black rounded-md overflow-hidden border border-white/10 shadow-inner">
                     {meta.thumbnail && (
                         <Image
                             src={meta.thumbnail}
                             alt={meta.title}
                             fill
-                            className="object-cover"
-                            sizes="(max-width: 640px) 100vw, 256px"
+                            className="object-contain" 
+                            sizes="(max-width: 640px) 100vw, 288px"
                             unoptimized={true}
                         />
                     )}
                 </div>
-                <div className="flex flex-1 flex-col">
-                  <h3 className="font-headline text-lg font-semibold leading-tight line-clamp-2" title={meta.title}>
+                
+                <div className="flex flex-1 flex-col justify-center">
+                  <h3 className="font-headline text-xl font-bold leading-tight line-clamp-2 mb-2" title={meta.title}>
                     {meta.title}
                   </h3>
                   {meta.duration && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {meta.duration}
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Duration: {meta.duration}
                     </p>
                   )}
                   
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {meta.options.map((s, i) => {
                       const streamLink = `/api/stream?url=${encodeURIComponent(s.url)}&title=${encodeURIComponent(meta.title)}`;
                       
@@ -173,8 +186,8 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
                         <Button
                             key={i}
                             asChild
-                            variant="secondary"
-                            className="bg-primary/20 text-primary-foreground hover:bg-primary/30 shadow-glow-sm"
+                            variant={s.type === 'audio' ? "secondary" : "default"}
+                            className="shadow-sm hover:scale-105 transition-transform"
                         >
                             <a href={streamLink} target="_blank" rel="noopener noreferrer">
                                 {getIcon(s.type)}
