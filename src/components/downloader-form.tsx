@@ -1,15 +1,27 @@
-'use client';
-
 import { useState } from 'react';
 import Image from 'next/image';
-import { extractVideo } from '@/lib/actions';
-import type { VideoMeta } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, Download, Clapperboard, Music } from 'lucide-react';
+import { Loader2, Download, Clapperboard, Music, Image as ImageIcon } from 'lucide-react';
+
+// --- Types based on the new API response ---
+interface DownloadOption {
+  label: string;
+  url: string;
+  type: string; // 'video' | 'audio' | 'image'
+  quality?: string;
+}
+
+interface VideoMeta {
+  title: string;
+  thumbnail: string;
+  options: DownloadOption[];
+  duration?: string;
+  source?: string;
+}
 
 function ResultSkeleton() {
   return (
@@ -34,7 +46,6 @@ function ResultSkeleton() {
   );
 }
 
-
 export function DownloaderForm({ placeholder }: { placeholder?: string }) {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -51,61 +62,43 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
       });
       return;
     }
+    
     setLoading(true);
     setMeta(null);
+
     try {
-      const result = await extractVideo(url);
-      if (result.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Extraction Failed',
-          description: result.error,
-        });
-      } else {
-        setMeta(result.data || null);
+      // Call our internal API route (Secure Proxy)
+      const res = await fetch('/api/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to fetch video details');
       }
+
+      setMeta(result);
+      
     } catch (err) {
+      console.error(err);
       toast({
         variant: 'destructive',
-        title: 'An Unexpected Error Occurred',
-        description: 'Please try again later.',
+        title: 'Extraction Failed',
+        description: err instanceof Error ? err.message : 'Could not download video. Please check the link.',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const getStreamLabel = (stream: VideoMeta['options'][0]) => {
-    if (stream.type?.toLowerCase() === 'audio') {
-      return `Audio ${stream.format || ''}`.trim();
-    }
-    
-    // Regex to find resolution like "720p" or "1080p"
-    const resolutionRegex = /\b(\d{3,4}p)\b/;
-  
-    // Check label first
-    if (stream.label) {
-      const labelMatch = stream.label.match(resolutionRegex);
-      if (labelMatch) return labelMatch[0];
-    }
-    
-    // Then check quality
-    if (stream.quality) {
-        const qualityMatch = stream.quality.match(resolutionRegex);
-        if (qualityMatch) return qualityMatch[0];
-    
-        // Fallback for quality like "1920x1080"
-        const qualityDimensionsMatch = stream.quality.match(/(?:\d+x)?(\d{3,4})/);
-        if (qualityDimensionsMatch) return `${qualityDimensionsMatch[1]}p`;
-    }
-    
-    // Generic fallback
-    if (stream.label) return stream.label.split(' ')[0];
-    if (stream.quality) return stream.quality.split(' ')[0];
-    if (stream.format) return stream.format.toUpperCase();
-    
-    return "Download";
-  }
+  const getIcon = (type: string) => {
+    if (type === 'audio') return <Music className="mr-2 h-4 w-4" />;
+    if (type === 'image') return <ImageIcon className="mr-2 h-4 w-4" />;
+    return <Clapperboard className="mr-2 h-4 w-4" />;
+  };
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -149,45 +142,47 @@ export function DownloaderForm({ placeholder }: { placeholder?: string }) {
           <Card className="glassmorphism overflow-hidden shadow-glow">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col gap-6 sm:flex-row">
-                <div className="relative aspect-video w-full shrink-0 sm:w-64">
-                    <Image
-                        src={meta.thumbnail}
-                        alt={meta.title}
-                        fill
-                        className="rounded-md object-cover"
-                        sizes="(max-width: 640px) 100vw, 256px"
-                        loading="lazy"
-                    />
+                <div className="relative aspect-video w-full shrink-0 sm:w-64 bg-black/10 rounded-md overflow-hidden">
+                    {meta.thumbnail && (
+                        <Image
+                            src={meta.thumbnail}
+                            alt={meta.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, 256px"
+                            unoptimized={true} // Important for external CDN images
+                        />
+                    )}
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-1 flex-col">
                   <h3 className="font-headline text-lg font-semibold leading-tight line-clamp-2" title={meta.title}>
                     {meta.title}
                   </h3>
                   {meta.duration && (
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {meta.duration} &bull; {meta.type}
+                      {meta.duration}
                     </p>
                   )}
+                  
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {meta.options.map((s, i) => (
-                      <Button
-                        key={i}
-                        asChild
-                        variant="secondary"
-                        className="bg-primary/20 text-primary-foreground hover:bg-primary/30 shadow-glow-sm"
-                      >
-                        <a href={`/api/stream?target=${encodeURIComponent(s.url)}&title=${encodeURIComponent(meta.title)}`}
-                           download
+                    {meta.options.map((s, i) => {
+                      // Construct the Secure Stream Link
+                      const streamLink = `/api/stream?url=${encodeURIComponent(s.url)}&title=${encodeURIComponent(meta.title)}`;
+                      
+                      return (
+                        <Button
+                            key={i}
+                            asChild
+                            variant="secondary"
+                            className="bg-primary/20 text-primary-foreground hover:bg-primary/30 shadow-glow-sm"
                         >
-                           {s.type?.toLowerCase() === 'audio' ? (
-                            <Music className="mr-2 h-4 w-4" />
-                          ) : (
-                            <Clapperboard className="mr-2 h-4 w-4" />
-                          )}
-                          {getStreamLabel(s)}
-                        </a>
-                      </Button>
-                    ))}
+                            <a href={streamLink} target="_blank" rel="noopener noreferrer">
+                                {getIcon(s.type)}
+                                {s.label}
+                            </a>
+                        </Button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
