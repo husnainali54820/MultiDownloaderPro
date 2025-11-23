@@ -1,4 +1,3 @@
-import { generateSeoContent } from '@/ai/flows/generate-seo-content';
 import { DownloaderForm } from '@/components/downloader-form';
 import MarkdownRenderer from '@/components/markdown-renderer';
 import type { Metadata } from 'next';
@@ -12,11 +11,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function InstagramDownloaderPage() {
-  const seoContent = await generateSeoContent({
-    platform: 'Instagram',
-    toolName: 'Multi-Downloader',
-  });
+export default function InstagramDownloaderPage() {
+  // Static content replacing the AI generated content
+  const staticSeoContent = `
+## How to Download Instagram Reels and Videos
+
+Our Instagram Downloader makes it easy to save your favorite content. Just follow these steps:
+
+1.  **Open Instagram:** Find the Reel, Video, or Post you want to save.
+2.  **Copy the URL:** Tap the share icon (paper airplane) or the three dots (...) and select "Copy Link".
+3.  **Paste the Link:** Insert the link into the input field above.
+4.  **Download:** Click the download button and the video will save to your device.
+
+## Features of Our Instagram Saver
+
+*   **Download Reels:** Save short-form Reels with audio.
+*   **High Resolution:** Get the best quality available for every post.
+*   **No Login Needed:** You don't need to sign in to your Instagram account.
+*   **Completely Free:** unlimited downloads with no restrictions.
+  `;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
@@ -34,7 +47,7 @@ export default async function InstagramDownloaderPage() {
       </section>
 
       <section className="mx-auto mt-12 max-w-4xl md:mt-16">
-        <MarkdownRenderer content={seoContent.seoContent} />
+        <MarkdownRenderer content={staticSeoContent} />
       </section>
     </div>
   );
