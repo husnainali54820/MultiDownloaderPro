@@ -18,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://multi-downloader.com'),
+  metadataBase: new URL('https://mdownloader.vercel.app/'),
   title: {
     default: 'All-in-One Social Media Video Downloader | Fast & Free',
     template: '%s | All Social Media Downloader',
