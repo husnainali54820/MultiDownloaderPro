@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://multi-downloader.com';
+  const baseUrl = 'https://mdownloader.vercel.app';
 
   const downloaderPages = [
     '/youtube-downloader',
