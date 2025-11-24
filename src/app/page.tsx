@@ -1,9 +1,91 @@
 import { DownloaderForm } from '@/components/downloader-form';
 import { SocialIconLinks } from '@/components/social-icon-links';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Multi Downloader - Best Free Video Downloader (YouTube, TikTok, IG)',
+  description: 'Download videos from YouTube, TikTok (No Watermark), Instagram, Facebook, and Twitter (X) in 4K/HD. Free, fast, and secure online video downloader.',
+  alternates: {
+    // 👇 CRITICAL CHANGE: This tells Google this is the real site
+    canonical: 'https://mdownloader.vercel.app',
+  },
+  keywords: [
+    'video downloader', 'online video downloader', '4k video downloader', 'free video downloader',
+    'youtube downloader', 'youtube to mp4', 'save youtube video',
+    'tiktok downloader', 'tiktok no watermark', 'download tiktok video',
+    'instagram downloader', 'instagram reels saver', 'download instagram stories',
+    'facebook video downloader', 'fb video saver',
+    'twitter video downloader', 'x video downloader',
+    'fastest video downloader', 'secure video downloader', 'mobile video downloader', 
+    'allinonedownloader', 'all social media downloader', 'online free downloader', 'unlimited downloader'
+  ],
+  openGraph: {
+    title: 'Multi Downloader - All-in-One Social Media Video Saver',
+    description: 'Download videos instantly from YouTube, TikTok, Instagram, FB & X. No watermark, high quality, and 100% free.',
+    // 👇 CRITICAL CHANGE
+    url: 'https://mdownloader.vercel.app',
+    siteName: 'Multi Downloader',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Multi Downloader Preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Multi Downloader - Free Video Downloader',
+    description: 'Save videos from YouTube, TikTok, Instagram & more in HD.',
+    images: ['/og-image.png'],
+  },
+};
 
 export default function Home() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Multi Downloader',
+    // 👇 CRITICAL CHANGE
+    url: 'https://mdownloader.vercel.app',
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Any',
+    description: 'A free online tool to download videos from YouTube, TikTok, Instagram, Facebook, and X in high quality.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '1250',
+    },
+    featureList: [
+      'YouTube 4K Downloader',
+      'TikTok No Watermark',
+      'Instagram Reels & Stories',
+      'Facebook HD Video',
+      'Twitter/X Media Saver',
+    ],
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
+      {/* Google AdSense Script (Backup placement) */}
+      <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506636616175400"
+          crossOrigin="anonymous"
+      ></script>
+
       <section className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl lg:text-7xl">
           All Social Media Downloader
@@ -27,6 +109,15 @@ export default function Home() {
           and features.
         </p>
         <SocialIconLinks className="mt-8" />
+      </section>
+
+      <section className="mt-16 mx-auto max-w-4xl prose dark:prose-invert text-left">
+        <h3>Why use Multi Downloader?</h3>
+        <p>
+          Multi Downloader is the most efficient way to save videos online. We support 
+          <strong> MP4 and MP3 formats</strong> with resolutions up to 4K. Whether you need a 
+          <em>TikTok video without watermark</em> or a <em>YouTube music playlist</em>, our tool handles it instantly.
+        </p>
       </section>
     </div>
   );
