@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
+import Script from 'next/script'; // Import Next.js Script component
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
@@ -87,6 +88,14 @@ export default function RootLayout({
           spaceGrotesk.variable
         )}
       >
+        {/* Google AdSense Script - Optimized for Next.js */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506636616175400"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
         <div className="relative flex min-h-dvh flex-col bg-background">
           <Header />
           <main className="flex-1">{children}</main>
