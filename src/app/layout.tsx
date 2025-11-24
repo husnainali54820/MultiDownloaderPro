@@ -1,12 +1,8 @@
-import { DownloaderForm } from '@/components/downloader-form'; // <--- ADDED THIS
-import { SocialIconLinks } from '@/components/social-icon-links'; // <--- ADDED THIS
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
-import Script from 'next/script'; // For Google AdSense
-import './globals.css'; // <--- CRITICAL: This makes Tailwind work!
+import Script from 'next/script'; // Import Script for AdSense
+import './globals.css'; // Critical for Tailwind styles
 import { cn } from '@/lib/utils';
-// Note: Header, Footer, Toaster are typically used in layout.tsx, not page.tsx, 
-// but I have kept your imports here as requested.
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
