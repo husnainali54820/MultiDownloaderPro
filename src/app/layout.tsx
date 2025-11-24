@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     'facebook video downloader', 'fb video saver',
     'twitter video downloader', 'x video downloader',
     // Long-tail
-    'fastest video downloader', 'secure video downloader', 'mobile video downloader', 'allinonedownloader', all social media downloader', 'online free downloader', 'umlimited downloader'
+    'fastest video downloader', 'secure video downloader', 'mobile video downloader', 'allinonedownloader', 'all social media downloader', 'online free downloader', 'umlimited downloader'
   ],
   openGraph: {
     title: 'Multi Downloader - All-in-One Social Media Video Saver',
