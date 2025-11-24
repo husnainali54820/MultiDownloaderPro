@@ -1,6 +1,12 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-Disallow: /api/
+import { MetadataRoute } from 'next';
 
-Sitemap: https://multi-downloader.com/sitemap.xml
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/api/', '/_next/', '/static/'],
+    },
+    sitemap: 'https://mdownloader.vercel.app/sitemap.xml',
+  };
+}
