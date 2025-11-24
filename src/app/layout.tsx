@@ -1,6 +1,16 @@
-import { DownloaderForm } from '@/components/downloader-form';
-import { SocialIconLinks } from '@/components/social-icon-links';
+import { DownloaderForm } from '@/components/downloader-form'; // <--- ADDED THIS
+import { SocialIconLinks } from '@/components/social-icon-links'; // <--- ADDED THIS
 import type { Metadata } from 'next';
+import { Inter, Space_Grotesk } from 'next/font/google';
+import Script from 'next/script'; // For Google AdSense
+import './globals.css'; // <--- CRITICAL: This makes Tailwind work!
+import { cn } from '@/lib/utils';
+// Note: Header, Footer, Toaster are typically used in layout.tsx, not page.tsx, 
+// but I have kept your imports here as requested.
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { Toaster } from '@/components/ui/toaster';
+
 
 // --- 1. SEO METADATA & KEYWORDS ---
 export const metadata: Metadata = {
@@ -19,7 +29,7 @@ export const metadata: Metadata = {
     'facebook video downloader', 'fb video saver',
     'twitter video downloader', 'x video downloader',
     // Long-tail
-    'fastest video downloader', 'secure video downloader', 'mobile video downloader', 'allinonedownloader', 'all social media downloader', 'online free downloader', 'umlimited downloader'
+    'fastest video downloader', 'secure video downloader', 'mobile video downloader', 'allinonedownloader', 'all social media downloader', 'online free downloader', 'unlimited downloader'
   ],
   openGraph: {
     title: 'Multi Downloader - All-in-One Social Media Video Saver',
@@ -76,6 +86,15 @@ export default function Home() {
   // --- 3. VISUAL COMPONENT ---
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
+      
+      {/* <--- ADDED: Google AdSense Script Here ---> */}
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506636616175400"
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
+
       {/* Inject Schema into Head for Google Bots */}
       <script
         type="application/ld+json"
